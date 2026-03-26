@@ -195,7 +195,7 @@ type Props = {
   createdAt: string
 }
 
-export default function ReportDocument({ analysis, createdAt }: Props) {
+export default function ReportDocument({ analysis, createdAt: _createdAt }: Props) {
   const { company, financials, summary, issues, strengths } = analysis
   const latestYear = financials.years[financials.years.length - 1]
   const today = new Date().toLocaleDateString('ko-KR', {

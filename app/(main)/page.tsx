@@ -1,30 +1,36 @@
-'use client'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import HomeClient from '@/components/upload/HomeClient'
+import RecentHistory from '@/components/history/RecentHistory'
 
-import { useState } from 'react'
-import UploadZone from '@/components/upload/UploadZone'
-import AnalysisProgress from '@/components/upload/AnalysisProgress'
+export default async function HomePage() {
+  const supabase = await createClient()
 
-export default function HomePage() {
-  const [analysisId, setAnalysisId] = useState<string | null>(null)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (analysisId) {
-    return (
-      <div className="px-5 py-6">
-        <AnalysisProgress
-          analysisId={analysisId}
-          onRetry={() => setAnalysisId(null)}
-        />
-      </div>
-    )
-  }
+  if (!user) redirect('/auth/login')
+
+  const { data: recent } = await supabase
+    .from('analyses')
+    .select('id, company_name, created_at, status')
+    .eq('user_id', user.id)
+    .eq('status', 'done')
+    .order('created_at', { ascending: false })
+    .limit(3)
 
   return (
     <div className="px-5 py-6">
-      <h1 className="text-lg font-medium mb-1">재무 분석 시작</h1>
-      <p className="text-sm text-gray-500 mb-6">
-        기업 종합 보고서 PDF를 업로드하면 AI가 재무 데이터를 분석합니다.
-      </p>
-      <UploadZone onUploaded={setAnalysisId} />
+      <HomeClient />
+      {recent && recent.length > 0 && (
+        <div className="mt-8">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+            최근 분석
+          </p>
+          <RecentHistory analyses={recent} />
+        </div>
+      )}
     </div>
   )
 }

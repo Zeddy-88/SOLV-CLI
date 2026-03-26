@@ -8,8 +8,9 @@ const geist = Geist({
 })
 
 export const metadata: Metadata = {
-  title: 'Solve AI — 기업 재무 분석',
-  description: '법인 영업사원을 위한 AI 재무 분석 도구',
+  title: 'Solve AI — 법인 재무 분석',
+  description:
+    '기업 재무 보고서를 업로드하면 AI가 영업 브리핑을 자동으로 만들어드립니다.',
 }
 
 export default function RootLayout({

@@ -1,3 +1,5 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import DashboardView from '@/components/dashboard/DashboardView'
@@ -6,6 +8,22 @@ import type { AnalysisStatus } from '@/types/analysis'
 
 type Props = {
   params: Promise<{ id: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('analyses')
+    .select('company_name')
+    .eq('id', id)
+    .single()
+
+  return {
+    title: data?.company_name
+      ? `${data.company_name} — Solve AI`
+      : 'Solve AI',
+  }
 }
 
 export default async function DashboardPage({ params }: Props) {
@@ -42,7 +60,7 @@ export default async function DashboardPage({ params }: Props) {
         <p className="text-sm text-red-700 mb-3">
           분석 중 오류가 발생했습니다{record.error_message ? `: ${record.error_message}` : '.'}
         </p>
-        <a href="/" className="text-sm text-blue-700 underline">다시 시도하기</a>
+        <Link href="/" className="text-sm text-blue-700 underline">다시 시도하기</Link>
       </div>
     )
   }

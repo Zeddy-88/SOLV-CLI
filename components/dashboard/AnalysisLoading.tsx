@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAnalysisStatus } from '@/hooks/useAnalysisStatus'
 import type { AnalysisStatus } from '@/types/analysis'
@@ -31,7 +32,7 @@ export default function AnalysisLoading({ analysisId, initialStatus }: AnalysisL
     return (
       <div className="px-5 py-6">
         <p className="text-sm text-red-700 mb-3">분석 중 오류가 발생했습니다.</p>
-        <a href="/" className="text-sm text-blue-700 underline">다시 시도하기</a>
+        <Link href="/" className="text-sm text-blue-700 underline">다시 시도하기</Link>
       </div>
     )
   }
