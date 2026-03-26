@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { detectFormat } from '@/lib/parsers/detect'
-import { extractTextFromPdf } from '@/lib/parsers/extract'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -37,16 +35,6 @@ export async function POST(request: Request) {
   const filePath = `${user.id}/${analysisId}.pdf`
 
   const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-
-  // 포맷 감지 (빠른 텍스트 추출 시도)
-  let pdfFormat: 'cretop' | 'nice' | 'generic' = 'generic'
-  try {
-    const text = await extractTextFromPdf(buffer)
-    pdfFormat = detectFormat(text)
-  } catch {
-    // 스캔본 등 텍스트 추출 실패 시 generic으로 처리
-  }
 
   const { error: uploadError } = await supabase.storage
     .from('reports')
@@ -61,7 +49,7 @@ export async function POST(request: Request) {
     user_id: user.id,
     file_name: file.name,
     file_path: filePath,
-    pdf_format: pdfFormat,
+    pdf_format: 'generic',
     status: 'pending',
   })
 

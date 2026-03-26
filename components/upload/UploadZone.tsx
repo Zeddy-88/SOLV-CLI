@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useRef, type DragEvent } from 'react'
-import { useRouter } from 'next/navigation'
 
 type UploadState = 'idle' | 'uploading' | 'done' | 'error'
 
-export default function UploadZone() {
-  const router = useRouter()
+type Props = {
+  onUploaded: (analysisId: string) => void
+}
+
+export default function UploadZone({ onUploaded }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [state, setState] = useState<UploadState>('idle')
@@ -75,7 +77,7 @@ export default function UploadZone() {
       return
     }
 
-    router.push(`/dashboard/${data.analysisId}`)
+    onUploaded(data.analysisId)
   }
 
   if (state === 'uploading') {
